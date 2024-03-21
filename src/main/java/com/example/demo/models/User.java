@@ -1,67 +1,45 @@
 package com.example.demo.models;
 
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Column(name = "user_name", nullable = false)
+    @NotBlank(message = "UserName is required")
+    @Column(nullable = false)
     private String userName;
 
+    @NotBlank(message = "FirstName is required")
+    @Column(nullable = false)
+    private String firstName;
+
+    @NotBlank(message = "LastName is required")
+    @Column(nullable = false)
+    private String lastName;
+
+    @NotBlank(message = "Email is required")
     @Email
-    @NotBlank
-    @Column(name = "email_address", nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @NotBlank
-    @Size(min = 8, message = "passWord should have atleast 8 characters")
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password should have at least 8 characters")
     @Column(name = "password", nullable = false)
     private String passWord;
-
-    public User() {
-
-    }
-
-    public User(String userName, String email) {
-        this.userName = userName;
-        this.email = email;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassWord() {
-        return passWord;
-    }
-
-    public void setPassWord(String passWord) {
-        this.passWord = passWord;
-    }
 }

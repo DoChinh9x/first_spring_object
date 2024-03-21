@@ -1,48 +1,63 @@
 package com.example.demo.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import lombok.AllArgsConstructor;
 
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.models.User;
 import com.example.demo.services.UserService;
 
-import java.util.List;
-import java.util.Map;
+import jakarta.validation.Valid;
 
-import javax.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@AllArgsConstructor
+@RequestMapping("api/users")
 public class UserController {
-    @Autowired
+
     private UserService userService;
 
-    @GetMapping("/")
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    // build create User REST API
+    @PostMapping
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+        User savedUser = userService.createUser(user);
+        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable(value = "id") Long userId) throws ResourceNotFoundException {
-        return userService.getUserById(userId);
+    // build get user by id REST API
+    // http://localhost:8080/api/users/1
+    @GetMapping("{id}")
+    public ResponseEntity<User> getUserById(@PathVariable("id") Long userId) throws ResourceNotFoundException {
+        User user = userService.getUserById(userId);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @PostMapping("/")
-    public User createUser(@Valid @RequestBody User user) {
-        return userService.createUser(user);
+    // Build Get All Users REST API
+    // http://localhost:8080/api/users
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable(value = "id") Long userId,
-            @Valid @RequestBody User userDetails) throws ResourceNotFoundException {
-        return userService.updateUser(userId, userDetails);
+    // Build Update User REST API
+    @PutMapping("{id}")
+    // http://localhost:8080/api/users/1
+    public ResponseEntity<User> updateUser(@PathVariable("id") Long userId,
+            @RequestBody User user) throws ResourceNotFoundException {
+        user.setId(userId);
+        User updatedUser = userService.updateUser(user);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public Map<String, Boolean> deleteUser(@PathVariable(value = "id") Long userId)
-            throws ResourceNotFoundException {
-        return userService.deleteUser(userId);
+    // Build Delete User REST API
+    @DeleteMapping("{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable("id") Long userId) throws ResourceNotFoundException {
+        userService.deleteUser(userId);
+        return new ResponseEntity<>("User successfully deleted!", HttpStatus.OK);
     }
 }

@@ -1,52 +1,19 @@
 package com.example.demo.services;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.models.User;
-import com.example.demo.repositories.UserRepository;
 
-@Service
-public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+import java.util.List;
+import java.util.Map;
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
+public interface UserService {
+    User createUser(User user);
 
-    public ResponseEntity<User> getUserById(Long userId) throws ResourceNotFoundException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
-        return ResponseEntity.ok(user);
-    }
+    User getUserById(Long userId) throws ResourceNotFoundException;
 
-    public User createUser(User user) {
-        return userRepository.save(user);
-    }
+    List<User> getAllUsers();
 
-    public ResponseEntity<User> updateUser(Long userId, User userDetails) throws ResourceNotFoundException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
+    User updateUser(User user) throws ResourceNotFoundException;
 
-        user.setEmail(userDetails.getEmail());
-        user.setUserName(userDetails.getUserName());
-        final User updatedUser = userRepository.save(user);
-        return ResponseEntity.ok(updatedUser);
-    }
-
-    public Map<String, Boolean> deleteUser(Long userId) throws ResourceNotFoundException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
-
-        userRepository.delete(user);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("deleted", Boolean.TRUE);
-        return response;
-    }
+    Map<String, Boolean> deleteUser(Long userId) throws ResourceNotFoundException;
 }
